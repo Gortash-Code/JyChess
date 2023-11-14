@@ -4,6 +4,7 @@ class Square:
             self.emptyChar='#'
         else:
             self.emptyChar='_'
+        self.currentChar=self.emptyChar
         self.value=0
         self.occupied=0
         self.moves=[]
@@ -11,27 +12,103 @@ class Square:
         self.y=y
         self.whiteAttackers=0
         self.blackAttackers=0
+    
 
 """
 Board class represents the gameboard, composed of 64 Square objects. This class contains methods to determine moves for each game position
 """
 class Board:
-
-"""
-Description: Initializes empty gameboard, creates 8x8 grid of Square objects, 
-sets all Squares to empty state and assigns display character for the empty state
-
-Parameters: None
-
-Output: None
-"""
+    """
+    Description: Initializes empty gameboard, creates 8x8 grid of Square objects, 
+    sets all Squares to empty state and assigns display character for the empty state
+    Parameters: None
+    Output: None
+    """
     def __init__(self):
         self.lastMoveStart=None
         self.lastMoveEnd=None
-        self.squares=[8][8]
+        self.squares= [[Square]*8]*8
         for i in range(8):
             for j in range(8):
                 self.squares[j][i] = Square(j,i)
+        i=1
+        for j in range(8):
+            self.squares[j][i].value = 1
+            self.squares[j][i].occupied = 1
+            self.squares[j][i].currentChar = 'p'
+        i=6
+        for j in range(8):
+            self.squares[j][i].value = 1
+            self.squares[j][i].occupied = 2
+            self.squares[j][i].currentChar = 'P'
+        
+        self.squares[0][0].value=5
+        self.squares[0][0].occupied=1
+        self.squares[0][0].currentChar='r'
+        self.squares[0][7].value=5
+        self.squares[0][7].occupied=1
+        self.squares[0][7].currentChar='r'
+        
+        self.squares[0][1].value=3
+        self.squares[0][1].occupied=1
+        self.squares[0][1].currentChar='n'
+        self.squares[0][6].value=3
+        self.squares[0][6].occupied=1
+        self.squares[0][6].currentChar='n'
+        
+        self.squares[0][2].value=3
+        self.squares[0][2].occupied=1
+        self.squares[0][2].currentChar='b'
+        self.squares[0][5].value=3
+        self.squares[0][5].occupied=1
+        self.squares[0][5].currentChar='b'
+        
+        self.squares[0][3].value=9
+        self.squares[0][3].occupied=1
+        self.squares[0][3].currentChar='q'
+        
+        self.squares[0][4].value=10
+        self.squares[0][4].occupied=1
+        self.squares[0][4].currentChar='k'
+        
+        
+        self.squares[7][0].value=5
+        self.squares[7][0].occupied=2
+        self.squares[7][0].currentChar='R'
+        self.squares[7][7].value=5
+        self.squares[7][7].occupied=2
+        self.squares[7][7].currentChar='R'
+        
+        self.squares[7][1].value=3
+        self.squares[7][1].occupied=2
+        self.squares[7][1].currentChar='N'
+        self.squares[7][6].value=3
+        self.squares[7][6].occupied=2
+        self.squares[7][6].currentChar='N'
+        
+        self.squares[7][2].value=3
+        self.squares[7][2].occupied=2
+        self.squares[7][2].currentChar='B'
+        self.squares[7][5].value=3
+        self.squares[7][5].occupied=2
+        self.squares[7][5].currentChar='B'
+        
+        self.squares[7][3].value=9
+        self.squares[7][3].occupied=2
+        self.squares[7][3].currentChar='Q'
+        
+        self.squares[7][4].value=10
+        self.squares[7][4].occupied=2
+        self.squares[7][4].currentChar='K'
+    
+    def printBoard(self):
+        line = []
+        for i in range(8):
+            for j in range(8):
+                line.append(self.squares[7-i][j].currentChar)
+            """print("%-30s %4.1f" % (line[0],line[1],line[2],line[3],line[4],line[5],line[6],line[7]))"""
+            print('{} {} {} {} {} {} {} {}'.format(line[0],line[1],line[2],line[3],line[4],line[5],line[6],line[7]))
+            line=[]
     """
     Description: Given a square on the board, sets available {moves[]} to the moves legal for a white pawn to make from the square
     
@@ -253,13 +330,440 @@ Output: None
         self.squares[Sq.x][Sq.y].moves=finalMoves
     def setMovesWhiteQueen(self, Sq):
         setMovesWhiteBishop(Sq)
-        finalMoves=self.[Sq.x][Sq.y].moves
+        finalMoves=self.squares[Sq.x][Sq.y].moves
         setMovesWhiteRook(Sq)
-        finalMoves.extend(self.[Sq.x][Sq.y].moves)
+        finalMoves.extend(self.squares[Sq.x][Sq.y].moves)
         self.squares[Sq.x][Sq.y].moves=finalMoves
     def setMovesBlackQueen(self, Sq):
         setMovesBlackBishop(Sq)
-        finalMoves=self.[Sq.x][Sq.y].moves
+        finalMoves=self.squares[Sq.x][Sq.y].moves
         setMovesBlackRook(Sq)
-        finalMoves.extend(self.[Sq.x][Sq.y].moves)
+        finalMoves.extend(self.squares[Sq.x][Sq.y].moves)
         self.squares[Sq.x][Sq.y].moves=finalMoves
+    def setMovesWhiteKing(self, Sq):
+        finalMoves=[]
+        if Sq.x>0:
+            if self.squares[Sq.x-1][Sq.y].blackAttackers==0 and self.squares[Sq.x-1][Sq.y].occupied!=1:
+                finalMoves.append(self.squares[Sq.x-1][Sq.y])
+            if Sq.y>0 and self.squares[Sq.x-1][Sq.y-1].blackAttackers==0 and self.squares[Sq.x-1][Sq.y-1].occupied!=1:
+                finalMoves.append(self.squares[Sq.x-1][Sq.y-1])
+            if Sq.y<7 and self.squares[Sq.x-1][Sq.y+1].blackAttackers==0 and self.squares[Sq.x-1][Sq.y+1].occupied!=1:
+                finalMoves.append(self.squares[Sq.x-1][Sq.y+1])
+        if Sq.x<7:
+            if self.squares[Sq.x+1][Sq.y].blackAttackers==0 and self.squares[Sq.x+1][Sq.y].occupied!=1:
+                finalMoves.append(self.squares[Sq.x+1][Sq.y])
+            if Sq.y>0 and self.squares[Sq.x+1][Sq.y-1].blackAttackers==0 and self.squares[Sq.x+1][Sq.y-1].occupied!=1:
+                finalMoves.append(self.squares[Sq.x+1][Sq.y-1])
+            if Sq.y<7 and self.squares[Sq.x+1][Sq.y+1].blackAttackers==0 and self.squares[Sq.x+1][Sq.y+1].occupied!=1:
+                finalMoves.append(self.squares[Sq.x+1][Sq.y+1])
+        if Sq.y<7 and self.squares[Sq.x][Sq.y+1].blackAttackers==0 and self.squares[Sq.x][Sq.y+1].occupied!=1:
+            finalMoves.append(self.squares[Sq.x][Sq.y+1])
+        if Sq.y>0 and self.squares[Sq.x][Sq.y-1].blackAttackers==0 and self.squares[Sq.x][Sq.y-1].occupied!=1:
+            finalMoves.append(self.squares[Sq.x][Sq.y-1])
+    def setMovesBlackKing(self, Sq):
+        finalMoves=[]
+        if Sq.x>0:
+            if self.squares[Sq.x-1][Sq.y].whiteAttackers==0 and self.squares[Sq.x-1][Sq.y].occupied!=2:
+                finalMoves.append(self.squares[Sq.x-1][Sq.y])
+            if Sq.y>0 and self.squares[Sq.x-1][Sq.y-1].whiteAttackers==0 and self.squares[Sq.x-1][Sq.y-1].occupied!=2:
+                finalMoves.append(self.squares[Sq.x-1][Sq.y-1])
+            if Sq.y<7 and self.squares[Sq.x-1][Sq.y+1].whiteAttackers==0 and self.squares[Sq.x-1][Sq.y+1].occupied!=2:
+                finalMoves.append(self.squares[Sq.x-1][Sq.y+1])
+        if Sq.x<7:
+            if self.squares[Sq.x+1][Sq.y].whiteAttackers==0 and self.squares[Sq.x+1][Sq.y].occupied!=2:
+                finalMoves.append(self.squares[Sq.x+1][Sq.y])
+            if Sq.y>0 and self.squares[Sq.x+1][Sq.y-1].whiteAttackers==0 and self.squares[Sq.x+1][Sq.y-1].occupied!=2:
+                finalMoves.append(self.squares[Sq.x+1][Sq.y-1])
+            if Sq.y<7 and self.squares[Sq.x+1][Sq.y+1].whiteAttackers==0 and self.squares[Sq.x+1][Sq.y+1].occupied!=2:
+                finalMoves.append(self.squares[Sq.x+1][Sq.y+1])
+        if Sq.y<7 and self.squares[Sq.x][Sq.y+1].whiteAttackers==0 and self.squares[Sq.x][Sq.y+1].occupied!=2:
+            finalMoves.append(self.squares[Sq.x][Sq.y+1])
+        if Sq.y>0 and self.squares[Sq.x][Sq.y-1].whiteAttackers==0 and self.squares[Sq.x][Sq.y-1].occupied!=2:
+            finalMoves.append(self.squares[Sq.x][Sq.y-1])
+    
+board = Board()
+board.printBoard()class Square:
+    def __init__(self, x,y):
+        if (x+y)%2==0:
+            self.emptyChar='#'
+        else:
+            self.emptyChar='_'
+        self.currentChar=self.emptyChar
+        self.value=0
+        self.occupied=0
+        self.moves=[]
+        self.x=x
+        self.y=y
+        self.whiteAttackers=0
+        self.blackAttackers=0
+    
+
+"""
+Board class represents the gameboard, composed of 64 Square objects. This class contains methods to determine moves for each game position
+"""
+class Board:
+    """
+    Description: Initializes empty gameboard, creates 8x8 grid of Square objects, 
+    sets all Squares to empty state and assigns display character for the empty state
+    Parameters: None
+    Output: None
+    """
+    def __init__(self):
+        self.lastMoveStart=None
+        self.lastMoveEnd=None
+        self.squares= [[Square]*8]*8
+        for i in range(8):
+            for j in range(8):
+                self.squares[j][i] = Square(j,i)
+        i=1
+        for j in range(8):
+            self.squares[j][i].value = 1
+            self.squares[j][i].occupied = 1
+            self.squares[j][i].currentChar = 'p'
+        i=6
+        for j in range(8):
+            self.squares[j][i].value = 1
+            self.squares[j][i].occupied = 2
+            self.squares[j][i].currentChar = 'P'
+        
+        self.squares[0][0].value=5
+        self.squares[0][0].occupied=1
+        self.squares[0][0].currentChar='r'
+        self.squares[0][7].value=5
+        self.squares[0][7].occupied=1
+        self.squares[0][7].currentChar='r'
+        
+        self.squares[0][1].value=3
+        self.squares[0][1].occupied=1
+        self.squares[0][1].currentChar='n'
+        self.squares[0][6].value=3
+        self.squares[0][6].occupied=1
+        self.squares[0][6].currentChar='n'
+        
+        self.squares[0][2].value=3
+        self.squares[0][2].occupied=1
+        self.squares[0][2].currentChar='b'
+        self.squares[0][5].value=3
+        self.squares[0][5].occupied=1
+        self.squares[0][5].currentChar='b'
+        
+        self.squares[0][3].value=9
+        self.squares[0][3].occupied=1
+        self.squares[0][3].currentChar='q'
+        
+        self.squares[0][4].value=10
+        self.squares[0][4].occupied=1
+        self.squares[0][4].currentChar='k'
+        
+        
+        self.squares[7][0].value=5
+        self.squares[7][0].occupied=2
+        self.squares[7][0].currentChar='R'
+        self.squares[7][7].value=5
+        self.squares[7][7].occupied=2
+        self.squares[7][7].currentChar='R'
+        
+        self.squares[7][1].value=3
+        self.squares[7][1].occupied=2
+        self.squares[7][1].currentChar='N'
+        self.squares[7][6].value=3
+        self.squares[7][6].occupied=2
+        self.squares[7][6].currentChar='N'
+        
+        self.squares[7][2].value=3
+        self.squares[7][2].occupied=2
+        self.squares[7][2].currentChar='B'
+        self.squares[7][5].value=3
+        self.squares[7][5].occupied=2
+        self.squares[7][5].currentChar='B'
+        
+        self.squares[7][3].value=9
+        self.squares[7][3].occupied=2
+        self.squares[7][3].currentChar='Q'
+        
+        self.squares[7][4].value=10
+        self.squares[7][4].occupied=2
+        self.squares[7][4].currentChar='K'
+    
+    def printBoard(self):
+        line = []
+        for i in range(8):
+            for j in range(8):
+                line.append(self.squares[7-i][j].currentChar)
+            """print("%-30s %4.1f" % (line[0],line[1],line[2],line[3],line[4],line[5],line[6],line[7]))"""
+            print('{} {} {} {} {} {} {} {}'.format(line[0],line[1],line[2],line[3],line[4],line[5],line[6],line[7]))
+            line=[]
+    """
+    Description: Given a square on the board, sets available {moves[]} to the moves legal for a white pawn to make from the square
+    
+    Parameters:
+        Sq-> Square for which to set moves
+    
+    Output:
+        None but does set the {moves[]} variable for Square {Sq}
+    """
+    def setMovesWhitePawn(self, Sq):
+        finalMoves=[]
+        if self.squares[Sq.x][Sq.y+1].occupied==0:
+            finalMoves.append(self.squares[Sq.x][Sq.y+1])
+            if Sq.y==1 and self.squares[Sq.x][Sq.y+2].occupied==0:
+                finalMoves.append(self.squares[Sq.x][Sq.y+2])
+        if Sq.x<7 and self.squares[Sq.x+1][Sq.y+1]==2:
+            finalMoves.append(self.squares[Sq.x+1][Sq.y+1])
+        if Sq.x>0 and self.squares[Sq.x-1][Sq.y+1]==2:
+            finalMoves.append(self.squares[Sq.x-1][Sq.y+1])
+        self.squares[Sq.x][Sq.y].moves=finalMoves
+    """
+    Description: Given a square on the board, sets available {moves[]} to the moves legal for a black pawn to make from the square
+    
+    Parameters:
+        Sq-> Square for which to set moves
+    
+    Output:
+        None but does set the {moves[]} variable for Square {Sq}
+    """
+    def setMovesBlackPawn(self, Sq):
+        finalMoves=[]
+        if self.squares[Sq.x][Sq.y-1].occupied==0:
+            finalMoves.append(self.squares[Sq.x][Sq.y-1])
+            if Sq.y==6 and self.squares[Sq.x][Sq.y-2].occupied==0:
+                finalMoves.append(self.squares[Sq.x][Sq.y-2])
+        if Sq.x<7 and self.squares[Sq.x+1][Sq.y-1]==2:
+            finalMoves.append(self.squares[Sq.x+1][Sq.y-1])
+        if Sq.x>0 and self.squares[Sq.x-1][Sq.y-1]==2:
+            finalMoves.append(self.squares[Sq.x-1][Sq.y-1])
+        self.squares[Sq.x][Sq.y].moves=finalMoves
+    
+    def setMovesWhiteKnight(self, Sq):
+        finalMoves=[]
+        if Sq.x>0:
+            if Sq.y<6 and self.squares[Sq.x-1][Sq.y+2].occupied!=1:
+                finalMoves.append(self.squares[Sq.x-1][Sq.y+2])
+            if Sq.y>1 and self.squares[Sq.x-1][Sq.y-2].occupied!=1:
+                finalMoves.append(self.squares[Sq.x-1][Sq.y-2])
+            if Sq.x>1:
+                if Sq.y<7 and self.squares[Sq.x-2][Sq.y+1].occupied!=1:
+                    finalMoves.append(self.squares[Sq.x-2][Sq.y+1])
+                if Sq.y>0 and self.squares[Sq.x-2][Sq.y-1].occupied!=1:
+                    finalMoves.append(self.squares[Sq.x-2][Sq.y-1])
+        if Sq.x<7:
+            if Sq.y<6 and self.squares[Sq.x+1][Sq.y+2].occupied!=1:
+                finalMoves.append(self.squares[Sq.x+1][Sq.y+2])
+            if Sq.y>1 and self.squares[Sq.x+1][Sq.y-2].occupied!=1:
+                finalMoves.append(self.squares[Sq.x+1][Sq.y-2])
+            if Sq.x<6:
+                if Sq.y<7 and self.squares[Sq.x+2][Sq.y+1].occupied!=1:
+                    finalMoves.append(self.squares[Sq.x+2][Sq.y+1])
+                if Sq.y>0 and self.squares[Sq.x+2][Sq.y-1].occupied!=1:
+                    finalMoves.append(self.squares[Sq.x+2][Sq.y-1])
+        self.squares[Sq.x][Sq.y].moves=finalMoves
+    def setMovesBlackKnight(self, Sq):
+        finalMoves=[]
+        if Sq.x>0:
+            if Sq.y<6 and self.squares[Sq.x-1][Sq.y+2].occupied!=2:
+                finalMoves.append(self.squares[Sq.x-1][Sq.y+2])
+            if Sq.y>1 and self.squares[Sq.x-1][Sq.y-2].occupied!=2:
+                finalMoves.append(self.squares[Sq.x-1][Sq.y-2])
+            if Sq.x>1:
+                if Sq.y<7 and self.squares[Sq.x-2][Sq.y+1].occupied!=2:
+                    finalMoves.append(self.squares[Sq.x-2][Sq.y+1])
+                if Sq.y>0 and self.squares[Sq.x-2][Sq.y-1].occupied!=2:
+                    finalMoves.append(self.squares[Sq.x-2][Sq.y-1])
+        if Sq.x<7:
+            if Sq.y<6 and self.squares[Sq.x+1][Sq.y+2].occupied!=2:
+                finalMoves.append(self.squares[Sq.x+1][Sq.y+2])
+            if Sq.y>1 and self.squares[Sq.x+1][Sq.y-2].occupied!=2:
+                finalMoves.append(self.squares[Sq.x+1][Sq.y-2])
+            if Sq.x<6:
+                if Sq.y<7 and self.squares[Sq.x+2][Sq.y+1].occupied!=2:
+                    finalMoves.append(self.squares[Sq.x+2][Sq.y+1])
+                if Sq.y>0 and self.squares[Sq.x+2][Sq.y-1].occupied!=2:
+                    finalMoves.append(self.squares[Sq.x+2][Sq.y-1])
+        self.squares[Sq.x][Sq.y].moves=finalMoves
+    def setMovesWhiteRook(self, Sq):
+        finalMoves=[]
+        j=Sq.x+1
+        i=Sq.y
+        while j<8 and self.squares[j][i].occupied!=1:
+            finalMoves.append(self.squares[j][i])
+            j+=1
+        if j<8 and self.squares[j][i].occupied==2:
+            finalMoves.append(self.squares[j][i])
+        j=Sq.x-1
+        i=Sq.y
+        while j>0 and self.squares[j][i].occupied!=1:
+            finalMoves.append(self.squares[j][i])
+            j-=1
+        if j>0 and self.squares[j][i].occupied==2:
+            finalMoves.append(self.squares[j][i])
+        j=Sq.x
+        i=Sq.y+1
+        while i<8 and self.squares[j][i].occupied!=1:
+            finalMoves.append(self.squares[j][i])
+            i+=1
+        if i<8 and self.squares[j][i].occupied==2:
+            finalMoves.append(self.squares[j][i])
+        j=Sq.x
+        i=Sq.y-1
+        while i>0 and self.squares[j][i].occupied!=1:
+            finalMoves.append(self.squares[j][i])
+            i-=1
+        if i>0 and self.squares[j][i].occupied==2:
+            finalMoves.append(self.squares[j][i])
+        self.squares[Sq.x][Sq.y].moves=finalMoves
+    def setMovesBlackRook(self, Sq):
+        finalMoves=[]
+        j=Sq.x+1
+        i=Sq.y
+        while j<8 and self.squares[j][i].occupied!=2:
+            finalMoves.append(self.squares[j][i])
+            j+=1
+        if j<8 and self.squares[j][i].occupied==1:
+            finalMoves.append(self.squares[j][i])
+        j=Sq.x-1
+        i=Sq.y
+        while j>0 and self.squares[j][i].occupied!=2:
+            finalMoves.append(self.squares[j][i])
+            j-=1
+        if j>0 and self.squares[j][i].occupied==1:
+            finalMoves.append(self.squares[j][i])
+        j=Sq.x
+        i=Sq.y+1
+        while i<8 and self.squares[j][i].occupied!=2:
+            finalMoves.append(self.squares[j][i])
+            i+=1
+        if i<8 and self.squares[j][i].occupied==1:
+            finalMoves.append(self.squares[j][i])
+        j=Sq.x
+        i=Sq.y-1
+        while i>0 and self.squares[j][i].occupied!=2:
+            finalMoves.append(self.squares[j][i])
+            i-=1
+        if i>0 and self.squares[j][i].occupied==1:
+            finalMoves.append(self.squares[j][i])
+        self.squares[Sq.x][Sq.y].moves=finalMoves
+    def setMovesWhiteBishop(self, Sq):
+        finalMoves=[]
+        j=Sq.x+1
+        i=Sq.y+1
+        while j<8 and i<8 and self.squares[j][i].occupied!=1:
+            finalMoves.append(self.squares[j][i])
+            j+=1
+            i+=1
+        if j<8 and i<8 and self.squares[j][i].occupied==2:
+            finalMoves.append(self.squares[j][i])
+        j=Sq.x+1
+        i=Sq.y-1
+        while j<8 and i>0 and self.squares[j][i].occupied!=1:
+            finalMoves.append(self.squares[j][i])
+            j+=1
+            i-=1
+        if j<8 and i>0 and self.squares[j][i].occupied==2:
+            finalMoves.append(self.squares[j][i])
+        j=Sq.x-1
+        i=Sq.y-1
+        while j>0 and i>0 and self.squares[j][i].occupied!=1:
+            finalMoves.append(self.squares[j][i])
+            j-=1
+            i-=1
+        if j>0 and i>0 and self.squares[j][i].occupied==2:
+            finalMoves.append(self.squares[j][i])
+        j=Sq.x-1
+        i=Sq.y+1
+        while j>0 and i<8 and self.squares[j][i].occupied!=1:
+            finalMoves.append(self.squares[j][i])
+            j-=1
+            i+=1
+        if j>0 and i<8 and self.squares[j][i].occupied==2:
+            finalMoves.append(self.squares[j][i])
+        self.squares[Sq.x][Sq.y].moves=finalMoves
+    def setMovesBlackBishop(self, Sq):
+        finalMoves=[]
+        j=Sq.x+1
+        i=Sq.y+1
+        while j<8 and i<8 and self.squares[j][i].occupied!=2:
+            finalMoves.append(self.squares[j][i])
+            j+=1
+            i+=1
+        if j<8 and i<8 and self.squares[j][i].occupied==1:
+            finalMoves.append(self.squares[j][i])
+        j=Sq.x+1
+        i=Sq.y-1
+        while j<8 and i>0 and self.squares[j][i].occupied!=2:
+            finalMoves.append(self.squares[j][i])
+            j+=1
+            i-=1
+        if j<8 and i>0 and self.squares[j][i].occupied==1:
+            finalMoves.append(self.squares[j][i])
+        j=Sq.x-1
+        i=Sq.y-1
+        while j>0 and i>0 and self.squares[j][i].occupied!=2:
+            finalMoves.append(self.squares[j][i])
+            j-=1
+            i-=1
+        if j>0 and i>0 and self.squares[j][i].occupied==1:
+            finalMoves.append(self.squares[j][i])
+        j=Sq.x-1
+        i=Sq.y+1
+        while j>0 and i<8 and self.squares[j][i].occupied!=2:
+            finalMoves.append(self.squares[j][i])
+            j-=1
+            i+=1
+        if j>0 and i<8 and self.squares[j][i].occupied==1:
+            finalMoves.append(self.squares[j][i])
+        self.squares[Sq.x][Sq.y].moves=finalMoves
+    def setMovesWhiteQueen(self, Sq):
+        setMovesWhiteBishop(Sq)
+        finalMoves=self.squares[Sq.x][Sq.y].moves
+        setMovesWhiteRook(Sq)
+        finalMoves.extend(self.squares[Sq.x][Sq.y].moves)
+        self.squares[Sq.x][Sq.y].moves=finalMoves
+    def setMovesBlackQueen(self, Sq):
+        setMovesBlackBishop(Sq)
+        finalMoves=self.squares[Sq.x][Sq.y].moves
+        setMovesBlackRook(Sq)
+        finalMoves.extend(self.squares[Sq.x][Sq.y].moves)
+        self.squares[Sq.x][Sq.y].moves=finalMoves
+    def setMovesWhiteKing(self, Sq):
+        finalMoves=[]
+        if Sq.x>0:
+            if self.squares[Sq.x-1][Sq.y].blackAttackers==0 and self.squares[Sq.x-1][Sq.y].occupied!=1:
+                finalMoves.append(self.squares[Sq.x-1][Sq.y])
+            if Sq.y>0 and self.squares[Sq.x-1][Sq.y-1].blackAttackers==0 and self.squares[Sq.x-1][Sq.y-1].occupied!=1:
+                finalMoves.append(self.squares[Sq.x-1][Sq.y-1])
+            if Sq.y<7 and self.squares[Sq.x-1][Sq.y+1].blackAttackers==0 and self.squares[Sq.x-1][Sq.y+1].occupied!=1:
+                finalMoves.append(self.squares[Sq.x-1][Sq.y+1])
+        if Sq.x<7:
+            if self.squares[Sq.x+1][Sq.y].blackAttackers==0 and self.squares[Sq.x+1][Sq.y].occupied!=1:
+                finalMoves.append(self.squares[Sq.x+1][Sq.y])
+            if Sq.y>0 and self.squares[Sq.x+1][Sq.y-1].blackAttackers==0 and self.squares[Sq.x+1][Sq.y-1].occupied!=1:
+                finalMoves.append(self.squares[Sq.x+1][Sq.y-1])
+            if Sq.y<7 and self.squares[Sq.x+1][Sq.y+1].blackAttackers==0 and self.squares[Sq.x+1][Sq.y+1].occupied!=1:
+                finalMoves.append(self.squares[Sq.x+1][Sq.y+1])
+        if Sq.y<7 and self.squares[Sq.x][Sq.y+1].blackAttackers==0 and self.squares[Sq.x][Sq.y+1].occupied!=1:
+            finalMoves.append(self.squares[Sq.x][Sq.y+1])
+        if Sq.y>0 and self.squares[Sq.x][Sq.y-1].blackAttackers==0 and self.squares[Sq.x][Sq.y-1].occupied!=1:
+            finalMoves.append(self.squares[Sq.x][Sq.y-1])
+    def setMovesBlackKing(self, Sq):
+        finalMoves=[]
+        if Sq.x>0:
+            if self.squares[Sq.x-1][Sq.y].whiteAttackers==0 and self.squares[Sq.x-1][Sq.y].occupied!=2:
+                finalMoves.append(self.squares[Sq.x-1][Sq.y])
+            if Sq.y>0 and self.squares[Sq.x-1][Sq.y-1].whiteAttackers==0 and self.squares[Sq.x-1][Sq.y-1].occupied!=2:
+                finalMoves.append(self.squares[Sq.x-1][Sq.y-1])
+            if Sq.y<7 and self.squares[Sq.x-1][Sq.y+1].whiteAttackers==0 and self.squares[Sq.x-1][Sq.y+1].occupied!=2:
+                finalMoves.append(self.squares[Sq.x-1][Sq.y+1])
+        if Sq.x<7:
+            if self.squares[Sq.x+1][Sq.y].whiteAttackers==0 and self.squares[Sq.x+1][Sq.y].occupied!=2:
+                finalMoves.append(self.squares[Sq.x+1][Sq.y])
+            if Sq.y>0 and self.squares[Sq.x+1][Sq.y-1].whiteAttackers==0 and self.squares[Sq.x+1][Sq.y-1].occupied!=2:
+                finalMoves.append(self.squares[Sq.x+1][Sq.y-1])
+            if Sq.y<7 and self.squares[Sq.x+1][Sq.y+1].whiteAttackers==0 and self.squares[Sq.x+1][Sq.y+1].occupied!=2:
+                finalMoves.append(self.squares[Sq.x+1][Sq.y+1])
+        if Sq.y<7 and self.squares[Sq.x][Sq.y+1].whiteAttackers==0 and self.squares[Sq.x][Sq.y+1].occupied!=2:
+            finalMoves.append(self.squares[Sq.x][Sq.y+1])
+        if Sq.y>0 and self.squares[Sq.x][Sq.y-1].whiteAttackers==0 and self.squares[Sq.x][Sq.y-1].occupied!=2:
+            finalMoves.append(self.squares[Sq.x][Sq.y-1])
+    
+board = Board()
+board.printBoard()
